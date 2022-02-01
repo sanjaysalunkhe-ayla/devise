@@ -5,8 +5,10 @@ module Devise
     # Default strategy for signing in a user, based on his email and password in the database.
     class DatabaseAuthenticatable < Authenticatable
       def authenticate!
+        Rails.logger.info "Database authenticatable is called========================"
         resource  = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
         encrypted = false
+        Rails.logger.info "Current user from Strategies - #{resource}"
 
         if validate(resource){ encrypted = true; resource.valid_password?(password) }
           resource.after_database_authentication

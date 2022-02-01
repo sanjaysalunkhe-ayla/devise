@@ -24,9 +24,10 @@ module Devise
       end
 
       def authenticate!
+        Rails.logger.info "TokenAuthenticatable is called=================="
         resource = mapping.to.find_for_token_authentication(authentication_hash)
         return fail(:invalid_token) unless resource
-
+        Rails.logger.info "Current user from Strategies - #{resource}"
         if validate(resource)
           resource.after_token_authentication
           success!(resource)
