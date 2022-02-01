@@ -55,6 +55,7 @@ module Devise
 
       # Verifies whether a user is locked or not.
       def access_locked?
+        Rails.logger.info "locked at: #{locked_at} , lock_expired: #{!lock_expired?}"
         locked_at && !lock_expired?
       end
 
@@ -84,17 +85,26 @@ module Devise
       # for verifying whether a user is allowed to sign in or not. If the user
       # is locked, it should never be allowed.
       def valid_for_authentication?
+        Rails.logger.info "I am inside valid_for_authentication==============="
+
+        Rails.logger.info "printing persisted #{persisted?} , and lock strategy #{lock_strategy_enabled?(:failed_attempts)}"
         return super unless persisted? && lock_strategy_enabled?(:failed_attempts)
 
         # Unlock the user if the lock is expired, no matter
         # if the user can login or not (wrong password, etc)
+
+        Rails.logger.info "lock_expired ? #{lock_expired?}"
         unlock_access! if lock_expired?
+
+        Rails.logger.info "access_locked is #{access_locked?}"
 
         if super && !access_locked?
           true
         else
+          Rails.logger.info "increasing failed_attempts count"
           self.failed_attempts ||= 0
           self.failed_attempts += 1
+          Rails.logger.info "attempts_exceeded check #{attempts_exceeded?}"
           if attempts_exceeded?
             lock_access! unless access_locked?
           else

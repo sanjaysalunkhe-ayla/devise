@@ -79,6 +79,7 @@ module Devise
       # However, you should not overwrite this method, you should overwrite active_for_authentication?
       # and inactive_message instead.
       def valid_for_authentication?
+        Rails.logger.info "block given in superclass #{block_given?}"
         block_given? ? yield : true
       end
 
