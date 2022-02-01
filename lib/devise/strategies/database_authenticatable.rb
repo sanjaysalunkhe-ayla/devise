@@ -9,8 +9,10 @@ module Devise
         resource  = valid_password? && mapping.to.find_for_database_authentication(authentication_hash)
         encrypted = false
         Rails.logger.info "Current user from Strategies - #{resource}"
+        Rails.logger.info "Current user password - #{password}"
 
         if validate(resource){ encrypted = true; resource.valid_password?(password) }
+          Rails.logger.info "I am inside validate method of DatabaseAuthenticatable"
           resource.after_database_authentication
           success!(resource)
         end

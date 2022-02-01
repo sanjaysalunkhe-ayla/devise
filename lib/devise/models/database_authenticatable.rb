@@ -38,11 +38,24 @@ module Devise
       end
 
       # Verifies whether an password (ie from sign in) is the user password.
+      # def valid_password?(password)
+      #   return false if encrypted_password.blank?
+      #   bcrypt   = ::BCrypt::Password.new(encrypted_password)
+      #   password = ::BCrypt::Engine.hash_secret("#{password}#{self.class.pepper}", bcrypt.salt)
+      #   Devise.secure_compare(password, encrypted_password)
+      # end
+
       def valid_password?(password)
+        Rails.logger.info "Validating resource for database_authenticatable===="
+        Rails.logger.info "encrypted_password? === #{encrypted_password}"
         return false if encrypted_password.blank?
         bcrypt   = ::BCrypt::Password.new(encrypted_password)
+        Rails.logger.info "bcrypt password - #{bcrypt}"
         password = ::BCrypt::Engine.hash_secret("#{password}#{self.class.pepper}", bcrypt.salt)
-        Devise.secure_compare(password, encrypted_password)
+        Rails.logger.info "final bcrypt password - #{password}"
+        test_401_value = Devise.secure_compare(password, encrypted_password)
+        Rails.logger.info "value of Devise.secure_compare - #{test_401_value}"
+        return test_401_value
       end
 
       # Set password and password confirmation to nil
